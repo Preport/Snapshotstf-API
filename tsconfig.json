@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "allowJs": false,
+        "checkJs": false,
+        "outDir": "./dist/",
+        "rootDir": "./source/",
+        "removeComments": true,
+        "sourceMap": true,
+        "strict": true,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "typeRoots": ["./node_modules/@types", "./types/modules"],
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "snapshotstf-api",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest --colors --coverage test --runInBand --detectOpenHandles",
+    "prepublishOnly": "tsc",
+    "compile": "tsc"
+  },
+  "author": "Preport | Erdem Gez",
+  "license": "MIT",
+  "dependencies": {
+    "got": "^11.8.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Preport/Snapshotstf-API.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Preport/Snapshotstf-API/issues"
+  },
+  "homepage": "https://github.com/Preport/Snapshotstf-API#readme",
+  "description": ""
+}
