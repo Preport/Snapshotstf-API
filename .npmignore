@@ -1,5 +1,6 @@
 .gitignore
 .gitattributes
+.github
 source
 coverage
 dist/__tests__
