@@ -4,9 +4,10 @@ class Snapshot {
     //I currently don't know how site's ratelimit works so this might be wrong UwU
     private rateLimit: number[] = [];
 
+    __rateHandler: NodeJS.Timeout;
     constructor(apiKey?: string) {
         this.apiKey = apiKey;
-        setInterval(() => {
+        this.__rateHandler = setInterval(() => {
             let i: number;
             const time = new Date().valueOf();
             for (i = 0; i < this.rateLimit.length; i++) {

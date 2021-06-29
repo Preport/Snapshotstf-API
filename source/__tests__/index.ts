@@ -79,3 +79,7 @@ test("Snapshot Functions", async () => {
     expect(typeof get.id).toBe("string");
     expect(get.sku).toBe("5021;6");
 });
+
+afterAll(() => {
+    clearInterval(snappy.__rateHandler);
+});
