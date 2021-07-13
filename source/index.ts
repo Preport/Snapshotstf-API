@@ -1,10 +1,14 @@
 import got from 'got';
+
+type responsify<T> = T extends Object ? Promise<{ sku: string } & T> : never;
+
 class SnapshotsTF {
     private readonly apiKey: string;
     //I currently don't know how site's ratelimit works so this might be wrong UwU
     private rateLimit: number[] = [];
 
     __rateHandler: NodeJS.Timeout;
+    __rateNumber: number = 120;
     constructor(apiKey?: string) {
         this.apiKey = apiKey;
         this.__rateHandler = setInterval(() => {
@@ -16,35 +20,39 @@ class SnapshotsTF {
             this.rateLimit.splice(0, i);
         }, 100);
     }
-    private async rate(tries?: number) {
-        if (this.rateLimit.length < 60) this.rateLimit.push(new Date().valueOf());
-        else if (tries === 5)
+    private async rate() {
+        if (this.rateLimit.length < this.__rateNumber) this.rateLimit.push(new Date().valueOf());
+        else
             throw {
                 statusCode: null,
                 message: 'This would exceed our rateLimit'
             };
+        /*
         else {
             await new Promise(resolve => setTimeout(resolve, 1000));
             await this.rate((tries || 0) + 1);
         }
+        */
     }
-    private async request(url: string, type?: 'get' | 'post', needKey?: boolean) {
+    private async request(url: string, type: 'get' | 'post' = 'get', needKey: boolean = false) {
         await this.rate();
-        return await got[type || 'get']('https://api.snapshots.tf/' + url, {
+        const req = got[type]('https://api.snapshots.tf/' + url, {
             headers: {
                 accept: 'application/json',
                 SNAPSHOT_KEY: needKey ? this.apiKey : ''
             }
-        })
-            .then(data => JSON.parse(data.body))
-            .catch(err => {
-                throw err.body || err;
-            });
+        });
+        try {
+            return JSON.parse((await req).body);
+        } catch (err) {
+            throw JSON.parse(err.response.body);
+        }
     }
     Stats() {
         return this.request('stats') as Promise<{
-            snapshots: number;
             listings: number;
+            snapshots: number;
+            users: number;
         }>;
     }
     Request(sku: string) {
@@ -59,14 +67,12 @@ class SnapshotsTF {
 
     Snapshots = {
         Get: (sku: string, max?: number) => {
-            return this.request(`snapshots/sku/${sku}?snapshots=${Math.max(1, Math.min(max || 10, 10))}`) as Promise<{
-                sku: string;
-                snapshots: SnapshotsTF.Listing[][];
-            }>;
+            return this.request(
+                `snapshots/sku/${sku}?snapshots=${Math.max(1, Math.min(max || 10, 10))}`
+            ) as responsify<{ snapshots: SnapshotsTF.Snapshot[] }>;
         },
         Overview: (sku: string) => {
-            return this.request('snapshots/overview/sku/' + sku) as Promise<{
-                sku: string;
+            return this.request('snapshots/overview/sku/' + sku) as responsify<{
                 name: string;
                 overview: {
                     id: string;
@@ -94,21 +100,37 @@ class SnapshotsTF {
         Get: (IDorSKU: string) => {
             const sp = IDorSKU.split(';');
             const isSKU = sp.length > 1 && Number(sp[0]) && Number(sp[1]);
-            return this.request(`snapshot/${isSKU ? 'sku' : 'id'}/${IDorSKU}`) as Promise<{
-                id: string;
-                sku: string;
-                listings: SnapshotsTF.Listing[];
-            }>;
+            return this.request(`snapshot/${isSKU ? 'sku' : 'id'}/${IDorSKU}`) as responsify<SnapshotsTF.Snapshot>;
         }
     };
     Listing = {
         Get: (id: string) => {
-            return this.request('listing/id/' + id) as Promise<SnapshotsTF.Listing>;
+            return this.request('listing/id/' + id) as responsify<SnapshotsTF.Listing>;
         }
     };
 }
 namespace SnapshotsTF {
     export interface Listing {
+        listing: {
+            parts: string[];
+            spells: string[];
+            buying: boolean;
+            automatic: boolean;
+            listingID: string;
+            paint: string;
+            currencies: {
+                metal: number;
+                key: number;
+            };
+            bumped: number;
+            created: number;
+            steamID64: string;
+        };
+        savedAt: number;
+        lastSeen: number;
+        id: string;
+    }
+    export interface SnapshotListing {
         id: string;
         savedAt: number;
         lastSeen: number;
@@ -125,6 +147,11 @@ namespace SnapshotsTF {
         created: number;
         buying: boolean;
         automatic: boolean;
+    }
+    export interface Snapshot {
+        listings: SnapshotListing[];
+        savedAt: number;
+        id: string;
     }
 }
 
