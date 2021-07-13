@@ -1,5 +1,5 @@
 import got from 'got';
-class Snapshot {
+class SnapshotsTF {
     private readonly apiKey: string;
     //I currently don't know how site's ratelimit works so this might be wrong UwU
     private rateLimit: number[] = [];
@@ -61,7 +61,7 @@ class Snapshot {
         Get: (sku: string, max?: number) => {
             return this.request(`snapshots/sku/${sku}?snapshots=${Math.max(1, Math.min(max || 10, 10))}`) as Promise<{
                 sku: string;
-                snapshots: Snapshot.Listing[][];
+                snapshots: SnapshotsTF.Listing[][];
             }>;
         },
         Overview: (sku: string) => {
@@ -97,17 +97,17 @@ class Snapshot {
             return this.request(`snapshot/${isSKU ? 'sku' : 'id'}/${IDorSKU}`) as Promise<{
                 id: string;
                 sku: string;
-                listings: Snapshot.Listing[];
+                listings: SnapshotsTF.Listing[];
             }>;
         }
     };
     Listing = {
         Get: (id: string) => {
-            return this.request('listing/id/' + id) as Promise<Snapshot.Listing>;
+            return this.request('listing/id/' + id) as Promise<SnapshotsTF.Listing>;
         }
     };
 }
-namespace Snapshot {
+namespace SnapshotsTF {
     export interface Listing {
         id: string;
         savedAt: number;
@@ -128,4 +128,4 @@ namespace Snapshot {
     }
 }
 
-export default Snapshot;
+export default SnapshotsTF;
