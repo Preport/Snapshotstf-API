@@ -1,6 +1,7 @@
 .gitignore
 .gitattributes
 .github
+.prettierrc
 source
 coverage
 dist/__tests__
