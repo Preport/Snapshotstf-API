@@ -1,17 +1,15 @@
 {
     "compilerOptions": {
-        "target": "esnext",
+        "target": "es2020",
         "module": "commonjs",
-        "allowJs": false,
-        "checkJs": false,
+        "declaration": true,
         "outDir": "./dist/",
         "rootDir": "./source/",
-        "removeComments": true,
-        "sourceMap": true,
+        "removeComments": false,
         "strict": true,
         "noImplicitAny": false,
         "strictNullChecks": false,
-        "typeRoots": ["./node_modules/@types", "./types/modules"],
+        "typeRoots": ["./node_modules/@types"],
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true
